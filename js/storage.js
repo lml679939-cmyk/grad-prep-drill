@@ -1,6 +1,6 @@
 /* storage.js — localStorage 持久層
  *
- * 規矩（沿用番茄鐘）：
+ * 三條規矩：
  *   1. 日期一律用「本地時區」的 YYYY-MM-DD，絕不用 toISOString()（那是 UTC，跨半夜會算錯天）
  *   2. 讀取一律 sanitize：localStorage 可能被手改壞或匯入爛檔，一律夾範圍、退回預設，不讓 App 白畫面
  *   3. 只在狀態改變時寫入，不做定時寫入

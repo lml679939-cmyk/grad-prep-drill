@@ -543,7 +543,7 @@ function renderMe() {
     el('div', { class: 'rows' },
       row('bulb', '我的素材庫', `${state.stories.length} 則・面試舉例時從這裡調`,
         () => interview.openStoryManager(refresh)),
-      row('star', '各校側重', `你報的 ${schools.length} 間，面試前掃一次`,
+      row('star', '各校側重', `${schools.length} 間行銷／企管所的調性，面試前掃一次`,
         () => interview.openSchoolNotes()),
       row('warn', '錯題本', `${snap.wrongCount} 題・連續答對 2 次才移出`,
         () => {

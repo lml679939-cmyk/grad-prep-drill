@@ -4,6 +4,9 @@
  * 教授問「請舉例說明」時，答不出來通常不是不懂理論，而是沒有事先把
  * 自己的經歷跟理論掛勾。所以答完題一定會把素材庫攤在旁邊提醒。
  *
+ * 素材庫的欄位刻意照 STAR 的骨架（情境→行動→結果）再加一欄「可扣什麼理論」，
+ * 最後那欄才是這個模組跟一般履歷筆記的差別。
+ *
  * 計時用牆鐘（記結束的絕對時刻，而非每秒減一）。切分頁或鎖屏時
  * setInterval 會被節流甚至凍結，用倒數變數會永久偏掉。
  */
@@ -303,7 +306,7 @@ export function editStory(story, onSave) {
   );
 
   const body = el('div', { style: 'display:flex;flex-direction:column;gap:13px' },
-    field('標題', 'title', '一句話認得出來就好，例如「社群收藏管理器 App」'),
+    field('標題', 'title', '一句話認得出來就好，例如「畢業專題」「暑期實習」'),
     field('情境', 'situation', '當時的問題或背景是什麼', 3),
     field('我做了什麼', 'action', '你的具體行動，不是團隊的', 3),
     field('結果', 'result', '有數字最好，沒有就講具體變化', 3),
@@ -330,7 +333,7 @@ export function editStory(story, onSave) {
 export function openSchoolNotes() {
   const body = el('div', { style: 'display:flex;flex-direction:column;gap:12px' },
     el('div', { class: 'field__hint' },
-      '同一題在不同學校要強調的重點不一樣。這裡整理你報的五間各自的調性，面試前一天再掃一次。'),
+      '同一題在不同學校要強調的重點不一樣。這裡整理幾間行銷／企管所各自的調性，面試前一天再掃一次。'),
     schools.map((s) => el('div', { class: 'card' },
       el('div', { class: 'card__head' }, icon('star'), s.name),
       el('div', { class: 'field__hint', style: 'margin-bottom:8px', text: s.program }),
