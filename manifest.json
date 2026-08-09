@@ -1,0 +1,17 @@
+{
+  "name": "推甄戰備室 — 管院五科",
+  "short_name": "推甄戰備室",
+  "description": "管理學、行銷管理、經濟學、統計學、財務管理的學習與題庫，專為研究所推甄面試準備。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F5F0",
+  "theme_color": "#2E4374",
+  "lang": "zh-Hant-TW",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

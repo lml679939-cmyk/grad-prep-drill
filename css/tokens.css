@@ -1,0 +1,119 @@
+/* 推甄戰備室 — 設計變數
+ *
+ * 調性：學術筆記本。靛藍當骨幹、暖橙當強調、米白紙感底色。
+ * 每一科有自己的主色，切科目時整頁的 --accent 會跟著換，
+ * 讓「我現在在讀哪一科」不必靠讀字判斷。
+ */
+
+:root {
+  /* 骨幹色 */
+  --indigo: #2E4374;
+  --indigo-soft: #4E5D94;
+  --amber: #E08A3C;
+  --amber-soft: #F0B87A;
+
+  /* 紙感 */
+  --paper: #F7F5F0;
+  --card: #FFFFFF;
+  --card-2: #FBFAF7;
+  --line: #E3DED4;
+  --line-soft: #EFEBE3;
+
+  /* 墨 */
+  --ink: #1F2430;
+  --ink-2: #4A5162;
+  --ink-3: #7C8496;
+
+  /* 語意色 */
+  --ok: #3E7C6A;
+  --ok-bg: #E6F1ED;
+  --bad: #C0503F;
+  --bad-bg: #FBEAE7;
+  --warn: #B8862B;
+  --warn-bg: #FAF1DD;
+
+  /* 五科主色 */
+  --sub-marketing: #D96A3C;
+  --sub-management: #3E7C6A;
+  --sub-econ: #5B6BB5;
+  --sub-stat: #8A5FA8;
+  --sub-finance: #B8862B;
+
+  /* 目前科目（由 JS 設定 body[data-subject] 覆寫） */
+  --accent: var(--indigo);
+  --accent-bg: #E9ECF5;
+
+  /* 版面
+   *
+   * 字級可調：JS 會把 settings.textSize 寫進 html 的 font-size，
+   * 全站字體尺寸都用 rem，所以一個變數就整頁跟著縮放。
+   *
+   * 頂列／分頁列高度與內容最大寬度也刻意用 rem——字放大時它們若維持
+   * 固定 px，文字會被切掉、行長也會變得太擠。padding 與圓角則保持 px，
+   * 這樣放大的是「字」而不是整個版面被吹脹。
+   */
+  --radius: 14px;
+  --radius-sm: 9px;
+  --radius-lg: 20px;
+  --gap: 14px;
+  --pad: 16px;
+  --tabbar-h: 3.9rem;
+  --topbar-h: 3.25rem;
+  --maxw: 45rem;
+
+  --shadow: 0 1px 2px rgba(31, 36, 48, .06), 0 4px 14px rgba(31, 36, 48, .05);
+  --shadow-lg: 0 6px 28px rgba(31, 36, 48, .16);
+
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC",
+          "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-num: "SF Mono", "Cascadia Mono", Consolas, monospace;
+
+  --t-fast: 120ms ease;
+  --t: 200ms cubic-bezier(.32, .72, .35, 1);
+}
+
+body[data-subject="marketing"]  { --accent: var(--sub-marketing);  --accent-bg: #FBEDE6; }
+body[data-subject="management"] { --accent: var(--sub-management); --accent-bg: #E6F1ED; }
+body[data-subject="econ"]       { --accent: var(--sub-econ);       --accent-bg: #EAECF7; }
+body[data-subject="stat"]       { --accent: var(--sub-stat);       --accent-bg: #F1EAF6; }
+body[data-subject="finance"]    { --accent: var(--sub-finance);    --accent-bg: #F8F0DC; }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #14171F;
+    --card: #1C202B;
+    --card-2: #222735;
+    --line: #2E3444;
+    --line-soft: #262B38;
+
+    --ink: #ECEEF3;
+    --ink-2: #B4BBCA;
+    --ink-3: #7C8496;
+
+    --indigo: #8FA3DA;
+    --indigo-soft: #6E7FB5;
+    --amber: #E8A45E;
+
+    --ok: #6FBFA6;   --ok-bg: #1B2C28;
+    --bad: #E07C69;  --bad-bg: #2E1F1D;
+    --warn: #D8AC5A; --warn-bg: #2C2618;
+
+    --sub-marketing: #E8875C;
+    --sub-management: #6FBFA6;
+    --sub-econ: #8B99DE;
+    --sub-stat: #B287CC;
+    --sub-finance: #D8AC5A;
+
+    --accent: var(--indigo);
+    --accent-bg: #232A3D;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 4px 14px rgba(0, 0, 0, .25);
+    --shadow-lg: 0 6px 28px rgba(0, 0, 0, .5);
+  }
+
+  body[data-subject="marketing"]  { --accent-bg: #2E2118; }
+  body[data-subject="management"] { --accent-bg: #1B2C28; }
+  body[data-subject="econ"]       { --accent-bg: #1E2334; }
+  body[data-subject="stat"]       { --accent-bg: #271E30; }
+  body[data-subject="finance"]    { --accent-bg: #2C2618; }
+}

@@ -1,0 +1,11 @@
+# 本機權限設定，不該進版控
+.claude/settings.local.json
+
+# Python（serve.py 執行後會產生）
+__pycache__/
+*.pyc
+
+# 作業系統
+.DS_Store
+Thumbs.db
+desktop.ini

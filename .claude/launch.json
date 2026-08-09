@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "推甄戰備室",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["serve.py", "8770"],
+      "port": 8770
+    }
+  ]
+}
