@@ -647,9 +647,11 @@ textarea { resize: vertical; min-height: 130px; line-height: 1.7; }
 .row:last-child { border-bottom: none; }
 .row:hover { background: var(--card-2); }
 .row .ic { color: var(--ink-3); }
-.row__main { flex: 1; min-width: 0; }
+/* 跟 .task__main 同一個問題：三個都是 <span>，沒設 display 時
+   預設 inline，標題與說明會擠在同一行——用 flex column 分開 */
+.row__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .row__t { font-size: .9rem; font-weight: 600; }
-.row__s { font-size: .77rem; color: var(--ink-3); }
+.row__s { font-size: .77rem; color: var(--ink-3); line-height: 1.4; }
 .row__r { font-size: .8rem; color: var(--ink-3); font-family: var(--font-num); }
 .row--danger .row__t, .row--danger .ic { color: var(--bad); }
 
