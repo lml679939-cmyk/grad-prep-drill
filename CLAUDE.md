@@ -59,8 +59,8 @@ python serve.py     # 本機預覽，port 8770（.claude/launch.json 已設定�
 │   └── interview.js    # 面試模擬 + 我的素材庫 + 各校側重
 ├── content/
 │   ├── index.js        # 科目註冊表 + 通用面試題 + 各校側重
-│   ├── marketing.js    # 行銷管理（第 1、5、6 章）
-│   └── management.js   # 管理學（第 1、4、8 章）
+│   ├── marketing.js    # 行銷管理（第 1、3、5、6、9、10 章）
+│   └── management.js   # 管理學（第 1、4、5、7、8 章）
 │   （economics.js / statistics.js / finance.js 尚未建立）
 └── icons/              # 192/512/maskable-512 PNG（Pillow 產生）
 ```
@@ -285,21 +285,38 @@ document.querySelectorAll('[class*="__main"]').forEach(m => {
 
 ---
 
-## 現況盤點（2026-08-10）
+## 現況盤點（2026-08-10 更新）
 
 ### 教材完成度
 
 | 科目 | 章節進度 | 知識點 |
 |---|---|---|
-| 行銷管理 | 3 / 10 章（第 1、5、6 章） | 11 |
-| 管理學 | 3 / 10 章（第 1、4、8 章） | 9 |
+| 行銷管理 | 6 / 10 章（第 1、3、5、6、9、10 章） | 21 |
+| 管理學 | 5 / 10 章（第 1、4、5、7、8 章） | 17 |
 | 經濟學 | **0 / 尚未建檔** | 0 |
 | 統計學 | **0 / 尚未建檔** | 0 |
 | 財務管理 | **0 / 尚未建檔** | 0 |
 
-合計 20 個知識點、71 張名詞卡、60 題選擇、20 題申論、29 題口試（含 9 題通用面試題）、5 間學校側重。
+合計 **38 個知識點、140 張名詞卡、114 題選擇、38 題申論、47 題口試**（含 9 題通用面試題）、5 間學校側重、17 處教材表格。
 
-**程式面功能已完整，瓶頸完全在內容。** 兩科規劃各 10 章、約 96 個知識點，目前完成約兩成；另三科尚未開檔（連 `content/economics.js` 這類檔案都還沒有）。
+**程式面功能已完整，瓶頸完全在內容。** 兩科的高頻章節已大致覆蓋，剩下的多為中低頻考點；另三科尚未開檔（連 `content/economics.js` 這類檔案都還沒有）。
+
+### 已完成的章節（不要重複做）
+
+**行銷管理**
+- mkt-01 行銷概論與價值創造（4 個知識點）
+- mkt-03 消費者行為（3）
+- mkt-05 STP（4）
+- mkt-06 產品與品牌權益（3）
+- mkt-09 整合行銷傳播 IMC（3）
+- mkt-10 數位行銷與新興議題（4）
+
+**管理學**
+- mgt-01 管理概論：功能、角色與技能（3）
+- mgt-04 規劃與策略（3）
+- mgt-05 組織結構與文化（4）
+- mgt-07 領導（4）
+- mgt-08 激勵理論（3）
 
 ---
 
@@ -307,18 +324,68 @@ document.querySelectorAll('[class*="__main"]').forEach(m => {
 
 ### P0 — 補教材（其他事都可以往後排）
 
-程式碼**完全不用動**，只往 `content/` 加資料。建議順序（依面試被問到的機率）：
+程式碼**完全不用動**，只往 `content/` 加資料。
 
-1. **行銷第 3 章 消費者行為**（購買決策過程、涉入度、B2B 採購）— 面試常問
-2. **行銷第 9 章 整合行銷傳播 IMC** — 中山行銷傳播管理特別重視
-3. **行銷第 10 章 數位行銷**（社群、KOL、CLV、行銷 4.0/5.0、ESG）
-4. **管理第 7 章 領導**（權變理論、轉換型 vs 交易型）
-5. **行銷第 2 章 行銷環境與五力**、**管理第 5 章 組織結構與文化**
-6. 其餘章節 → 經濟學 → 統計學 → 財務管理
+**兩科的高頻章節已完成**，接下來有兩條路線，建議先做 B：
 
-新增科目：寫 `content/<科目>.js`，在 `content/index.js` 匯入並放進 `SUBJECTS`；`tokens.css` 已預留 `--sub-econ` / `--sub-stat` / `--sub-finance` 三個主色。
+**A. 補完現有兩科的剩餘章節**（中低頻考點）
+- 行銷：第 2 章 行銷環境與五力、第 4 章 行銷研究、第 7 章 訂價、第 8 章 通路與零售
+- 管理：第 2 章 管理思想演進、第 3 章 決策、第 6 章 人力資源、第 9 章 溝通與團隊、第 10 章 控制與變革
+
+**B. 開經濟學（建議優先）**
+理由是邊際效益：再補行銷第 2 章只是多一個中低頻考點，但開經濟學是補上一整科從零到有。台大商研與北大企研都可能問到。經濟學的供需、彈性、市場結構用文字＋表格就能處理，**不必等公式排版方案**（統計與財管才真的需要）。
+
+建議章節：供需與均衡 → 彈性 → 消費者行為與效用 → 生產與成本 → 市場結構（完全競爭／獨占／獨占性競爭／寡占）→ 賽局理論 → 市場失靈與外部性 → 總體：GDP 與物價 → 貨幣與利率 → 國際貿易。
+
+新增科目：寫 `content/<科目>.js`，在 `content/index.js` 匯入並放進 `SUBJECTS`；`tokens.css` 已預留 `--sub-econ` / `--sub-stat` / `--sub-finance` 三個主色。**記得把新檔案加進 `sw.js` 的 `ASSETS` 並把 `CACHE` 版本號加一。**
 
 **動內容前務必先讀上方「內容模型」的五條撰寫規則**，尤其 id 只能往陣列尾端加。
+
+### 每章的產出規格（照這個做就會跟既有內容一致）
+
+- 每章 **3–4 個知識點**，每個知識點包含：
+  - `brief` 面試層（30 秒講得出口，可用表格做比較）
+  - `advanced` 進階層（模型細節、限制、學術爭論、跨章連結）
+  - `example` 台灣或可驗證的實務案例（**避免對真實企業內部運作做無法查證的斷言**，用情境式舉例較安全）
+  - `terms` 3–4 張名詞卡，每張含 `en` 英文名與 `tip` 面試講法
+  - `mcqs` 3 題選擇，每題 4 選項 + 詳解（**詳解不可提及選項代號**）
+  - `essays` 1 題申論，含 `outline` 答題大綱、`rubric` 評分要點、`sample` 完整範答（約 800–1200 字）
+  - `oral` 1 題口試，含 `framework` 答題框架與 `pitfall` 常見地雷
+- **跨章連結用 `[[概念 id]]`**（例如 `[[mgt-08-02]]`），這是拉開申論分數最有效的手法
+- 寫完務必跑下方的品質檢核腳本
+
+### ★ 內容品質檢核腳本（每次補完內容都要跑）
+
+在 `python serve.py` 起站後，於瀏覽器 console 執行：
+
+```js
+(async () => {
+  const c = await import('./js/content.js');
+  const ui = await import('./js/ui.js');
+  const bad = c.allMcqs.filter(m => !Array.isArray(m.options) || m.options.length !== 4
+    || !Number.isInteger(m.answer) || m.answer < 0 || m.answer > 3 || !m.q || !m.explain).map(m => m.id);
+  const letters = c.allMcqs.filter(m => /選項\s*[（(]?\s*[A-D]\s*[)）]?/.test(m.explain)).map(m => m.id);
+  const incomplete = c.allConcepts.filter(x => !x.brief || !x.terms?.length
+    || !x.mcqs?.length || !x.essays?.length || !x.oral?.length).map(x => x.id);
+  const ids = c.allConcepts.map(x => x.id);
+  const dupIds = [...new Set(ids.filter((v,i) => ids.indexOf(v) !== i))];
+  const itemIds = [...c.allCards, ...c.allMcqs, ...c.allEssays, ...c.allOrals].map(x => x.id);
+  const dupItemIds = [...new Set(itemIds.filter((v,i) => itemIds.indexOf(v) !== i))];
+  const tables = [];
+  for (const x of c.allConcepts) for (const f of ['brief','advanced','example']) {
+    const v = x[f];
+    if (typeof v === 'string' && /^\s*\|.*\|\s*$/m.test(v)) {
+      const h = ui.md(v);
+      if (!h.includes('<table>') || h.includes('|---')) tables.push(`${x.id}.${f}`);
+    }
+  }
+  return { bad, letters, incomplete, dupIds, dupItemIds, brokenTables: tables,
+    totals: { concepts: c.allConcepts.length, cards: c.allCards.length,
+      mcqs: c.allMcqs.length, essays: c.allEssays.length, orals: c.allOrals.length } };
+})()
+```
+
+全部陣列都應該是空的。`totals` 拿來更新這份文件與 README 的數字。
 
 ### P1 — 會實際影響讀書效率的功能缺口
 
