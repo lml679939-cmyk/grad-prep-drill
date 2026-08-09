@@ -163,9 +163,11 @@ button { font: inherit; color: inherit; cursor: pointer; }
   background: var(--accent-bg); color: var(--accent);
 }
 .task__ic .ic { width: 21px; height: 21px; }
-.task__main { min-width: 0; flex: 1; }
+/* 這三個節點都是 <span>，預設 inline 會讓標題與說明擠在同一行——
+   靠 flex column 讓它們各自成行，並用 gap 隔開 */
+.task__main { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .task__name { font-weight: 650; font-size: .94rem; }
-.task__sub { font-size: .79rem; color: var(--ink-3); }
+.task__sub { font-size: .79rem; color: var(--ink-3); line-height: 1.4; }
 .task__n {
   font-family: var(--font-num); font-size: 1.5rem; font-weight: 700;
   color: var(--accent); line-height: 1;
@@ -326,7 +328,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .btn--danger { color: var(--bad); border-color: var(--line); }
 .btn--danger:hover { background: var(--bad-bg); border-color: var(--bad); }
 .btn--sm { padding: 7px 13px; font-size: .82rem; }
-.btn--block { width: 100%; }
+/* display:flex（不是預設的 inline-flex）——.sheet__foot > * 靠
+   max-width + margin:auto 把按鈕置中，但 margin:auto 只對 block 級的
+   盒子有置中效果，inline 級（含 inline-flex）一律算 0，按鈕因此貼左 */
+.btn--block { display: flex; width: 100%; }
 .btn:disabled { opacity: .4; pointer-events: none; }
 
 .btnrow { display: flex; gap: 9px; flex-wrap: wrap; }
