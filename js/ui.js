@@ -64,16 +64,48 @@ function inline(s) {
   return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 }
 
-/** 支援：**粗體**、`- ` 項目清單、`1. ` 編號清單、空行分段 */
+/* 表格辨識：標題列 → 分隔列 → 內容列。
+   分隔列只允許 | : - 空白，且必須含有 -，才不會把普通內容誤判成表格。 */
+const isRow = (s) => /^\|.*\|$/.test(s);
+const isSep = (s) => /^\|[\s:|-]+\|$/.test(s) && s.includes('-');
+const cellsOf = (s) => s.slice(1, -1).split('|').map((c) => c.trim());
+
+/**
+ * 支援：**粗體**、`- ` 項目清單、`1. ` 編號清單、空行分段、Markdown 表格。
+ *
+ * 表格是後來補的：教材裡有大量「A 與 B 的比較」（行銷 1.0–5.0、PLC 各期策略、
+ * 推廣五工具、Aaker vs Keller），這類內容拆成清單會失去對照的結構。
+ * 表格外面一定要包 .tablewrap（可橫向捲動），否則窄螢幕會把整頁撐寬。
+ */
 export function md(src) {
   const lines = String(src ?? '').split('\n');
   let html = '';
   let list = null;
   const flush = () => { if (list) { html += `</${list}>`; list = null; } };
 
-  for (const raw of lines) {
-    const line = raw.trim();
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
     if (!line) { flush(); continue; }
+
+    // 表格：目前這行是列，且下一行是分隔列
+    if (isRow(line) && i + 1 < lines.length && isSep(lines[i + 1].trim())) {
+      flush();
+      const head = cellsOf(line);
+      const rows = [];
+      let j = i + 2;
+      while (j < lines.length && isRow(lines[j].trim())) {
+        rows.push(cellsOf(lines[j].trim()));
+        j++;
+      }
+      html += '<div class="tablewrap"><table>'
+        + '<thead><tr>' + head.map((h) => `<th>${inline(h)}</th>`).join('') + '</tr></thead>'
+        + (rows.length
+          ? '<tbody>' + rows.map((r) => '<tr>' + r.map((c) => `<td>${inline(c)}</td>`).join('') + '</tr>').join('') + '</tbody>'
+          : '')
+        + '</table></div>';
+      i = j - 1;
+      continue;
+    }
 
     const ul = /^[-•]\s+(.*)$/.exec(line);
     const ol = /^\d+[.、)]\s+(.*)$/.exec(line);

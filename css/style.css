@@ -285,6 +285,38 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .layer summary { list-style: none; }
 .layer summary::-webkit-details-marker { display: none; }
 
+/* 教材表格。窄螢幕靠 .tablewrap 橫向捲動，
+   不讓寬表格把整頁撐開（版面一旦水平溢出，全站都會跟著跑掉）。 */
+.tablewrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 0 .7em;
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+}
+.tablewrap:last-child { margin-bottom: 0; }
+.tablewrap table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: .88em;
+  line-height: 1.55;
+}
+.tablewrap th, .tablewrap td {
+  padding: 8px 11px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line-soft);
+  white-space: normal;
+}
+.tablewrap th {
+  background: var(--card-2);
+  font-weight: 700;
+  font-size: .93em;
+  white-space: nowrap;
+}
+.tablewrap tbody tr:last-child td { border-bottom: none; }
+.tablewrap td:first-child { white-space: nowrap; font-weight: 600; }
+
 .callout {
   border-left: 3px solid var(--accent); background: var(--accent-bg);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
