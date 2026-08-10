@@ -20,8 +20,9 @@
 import marketing from './marketing.js';
 import management from './management.js';
 import economics from './economics.js';
+import statistics from './statistics.js';
 
-export const SUBJECTS = [marketing, management, economics];
+export const SUBJECTS = [marketing, management, economics, statistics];
 
 /* ─────────── 通用面試題 ───────────
  * 不屬於任何知識點。實務上這類題目在面試佔比往往高於專業題——

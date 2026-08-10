@@ -338,32 +338,42 @@ function runQc() {
   const itemIds = [...cards, ...mcqs, ...essays, ...orals].map((x) => x.id);
   const dupItemIds = [...new Set(itemIds.filter((v, i) => itemIds.indexOf(v) !== i))];
 
+  /* 掃描範圍不只知識點的三個欄位——選擇題詳解與申論範答同樣走 md() 渲染，
+   * 統計學開始把公式與跨章連結寫進 explain 與 sample，漏掉這兩處等於沒檢查。
+   * 這裡把每個要檢查的字串攤平成 { id, field, text } 一起處理。 */
+  const texts = [];
+  for (const c of concepts) {
+    for (const f of ['brief', 'advanced', 'example']) {
+      if (typeof c[f] === 'string') texts.push({ id: c.id, field: f, text: c[f] });
+    }
+  }
+  for (const m of mcqs) {
+    if (typeof m.explain === 'string') texts.push({ id: m.id, field: 'explain', text: m.explain });
+  }
+  for (const e of essays) {
+    if (typeof e.sample === 'string') texts.push({ id: e.id, field: 'sample', text: e.sample });
+  }
+
   // 表格語法：有分隔列但上一行不是標題列 → md() 會把 |---|---| 當文字印出來
   const brokenTables = [];
   const deadLinks = [];
-  for (const c of concepts) {
-    for (const f of ['brief', 'advanced', 'example']) {
-      const v = c[f];
-      if (typeof v !== 'string') continue;
+  {
+    for (const { id, field, text: v } of texts) {
       const lines = v.split('\n').map((l) => l.trim());
       lines.forEach((l, i) => {
-        if (isSep(l) && !(i > 0 && isRow(lines[i - 1]))) brokenTables.push(`${c.id}.${f}`);
+        if (isSep(l) && !(i > 0 && isRow(lines[i - 1]))) brokenTables.push(`${id}.${field}`);
       });
       for (const m of v.matchAll(/\[\[([^\]]+)\]\]/g)) {
-        if (!conceptTitle.has(m[1])) deadLinks.push(`${c.id}.${f} → ${m[1]}`);
+        if (!conceptTitle.has(m[1])) deadLinks.push(`${id}.${field} → ${m[1]}`);
       }
     }
   }
 
   // 行內公式 `x` 必須成對。經濟／統計／財管大量使用，而欄位本身是樣板字串，
   // 少寫一個 escape 反引號就會變成語法錯誤或整段公式外洩，這裡先擋一次。
-  const oddBackticks = [];
-  for (const c of concepts) {
-    for (const f of ['brief', 'advanced', 'example']) {
-      const v = c[f];
-      if (typeof v === 'string' && (v.match(/`/g) || []).length % 2 !== 0) oddBackticks.push(`${c.id}.${f}`);
-    }
-  }
+  const oddBackticks = texts
+    .filter(({ text }) => (text.match(/`/g) || []).length % 2 !== 0)
+    .map(({ id, field }) => `${id}.${field}`);
 
   const missingEn = cards.filter((t) => !t.en).map((t) => t.id);
   const missingSource = concepts.filter((c) => !c.source).map((c) => c.id);
