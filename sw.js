@@ -10,7 +10,7 @@
  * ★ 新增 js/ 或 content/ 檔案時要同步加進 ASSETS。
  */
 
-const CACHE = 'gradprep-v10';
+const CACHE = 'gradprep-v11';
 
 const ASSETS = [
   './',
