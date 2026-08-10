@@ -1,12 +1,12 @@
 /* tools/export-md.mjs — 把教材與題庫匯出成 Markdown（給 NotebookLM 等第三方檢查用）
  *
  * 用法：node tools/export-md.mjs
- * 產出：export/ 目錄下六個 .md 檔 + 一份內容品質檢核報告（印在終端機）
+ * 產出：export/ 目錄下的 .md 檔（總覽 1 + 教材每科 1 + 題庫 3）+ 內容品質檢核報告（印在終端機）
  *
  * 這支腳本只讀 content/，不動任何 App 資料。純 Node，無外部套件。
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -49,10 +49,25 @@ function links(s) {
 const list = (arr, bullet = '-') => (arr || []).map((x) => `${bullet} ${links(x)}`).join('\n');
 const numbered = (arr) => (arr || []).map((x, i) => `${i + 1}. ${links(x)}`).join('\n');
 
+const writtenNames = new Set();
+
 function write(name, body) {
   const path = join(OUT, name);
   writeFileSync(path, body.replace(/\n{4,}/g, '\n\n\n').trimEnd() + '\n', 'utf8');
+  writtenNames.add(name);
   return `${name}（${(Buffer.byteLength(body, 'utf8') / 1024).toFixed(0)} KB）`;
+}
+
+/* 清掉上一次匯出留下、這次不再產生的檔（例如教材從 01_ 改編號成 01a_ 之後的舊檔）。
+ * 使用者的流程是把整個 export/ 丟給 NotebookLM，留著舊檔會變成同一份教材上傳兩次。
+ * 只刪符合本腳本命名規則（兩位數字＋可選字母＋底線＋.md）且這次沒寫過的檔，
+ * 使用者自己放進 export/ 的東西不會被動到。 */
+function pruneStale() {
+  const stale = readdirSync(OUT).filter(
+    (f) => /^\d{2}[a-z]?_.+\.md$/.test(f) && !writtenNames.has(f)
+  );
+  stale.forEach((f) => rmSync(join(OUT, f)));
+  return stale;
 }
 
 const TODAY = new Date().toLocaleDateString('sv-SE');   // YYYY-MM-DD 本地時區
@@ -92,6 +107,23 @@ function lecture(subject) {
   }
   return out;
 }
+
+/* 教材檔一科一個，檔名由 SUBJECTS 動態產生 —— 不要再寫死 SUBJECTS[0]、SUBJECTS[1]，
+ * 那正是經濟學建檔後教材長期沒被匯出的原因（題庫有出、只有教材漏掉）。
+ *
+ * 編號用 01a / 01b / 01c… 而不是 01 / 02 / 03：03–05 已被三個題庫檔佔用，
+ * 而使用者的 NotebookLM 筆記本是照檔名建立來源的，重編號等於要他整本重傳。
+ * 往後補統計、財管只會往後長成 01d / 01e，題庫的 03–05 永遠不必動。
+ */
+const lectureFiles = SUBJECTS.map((s, i) => ({
+  subject: s,
+  file: `01${String.fromCharCode(97 + i)}_${s.name}_教材.md`
+}));
+
+/* 管院五科的最終範圍。SUBJECTS 只含「已建檔」的科目，兩者相減即為待補，
+ * 這樣總覽裡的「尚未建檔」不會像先前那樣停留在舊狀態。 */
+const PLANNED_SUBJECTS = ['行銷管理', '管理學', '經濟學', '統計學', '財務管理'];
+const pendingSubjects = PLANNED_SUBJECTS.filter((n) => !SUBJECTS.some((s) => s.name === n));
 
 /* ─────────── 2. 選擇題題庫 ─────────── */
 
@@ -208,6 +240,11 @@ function overview(qc) {
     return `| ${s.name} | ${s.chapters.length} | ${cs.length} | ${n(cards)} | ${n(mcqs)} | ${n(essays)} | ${n(orals)} |`;
   }).join('\n');
 
+  // 檔案清單必須跟著實際產出走，否則第三方會照著總覽去找一個不存在的檔
+  const fileRows = lectureFiles
+    .map(({ subject, file }) => `| \`${file}\` | ${subject.name}講義（含名詞卡） |`)
+    .join('\n');
+
   return `# 推甄戰備室｜內容總覽與檢查指引
 
 匯出日期：${TODAY}
@@ -238,15 +275,16 @@ ${rows}
 
 另有通用面試題 ${GENERAL_ORAL.length} 題、各校側重 ${SCHOOLS.length} 間。
 
-尚未建檔的科目：**經濟學、統計學、財務管理**。行銷管理與管理學各完成 10 章中的部分章節。
+${pendingSubjects.length
+  ? `尚未建檔的科目：**${pendingSubjects.join('、')}**，本次匯出不含這些科目的任何內容。`
+  : '管院五科皆已建檔。'}
 
 ## 檔案清單
 
 | 檔案 | 內容 |
 |---|---|
 | \`00_總覽與檢查指引.md\` | 本檔 |
-| \`01_行銷管理_教材.md\` | 行銷管理講義（含名詞卡） |
-| \`02_管理學_教材.md\` | 管理學講義（含名詞卡） |
+${fileRows}
 | \`03_選擇題題庫.md\` | 全部選擇題，**已標正解與詳解** |
 | \`04_申論題題庫.md\` | 全部申論題，含大綱、評分要點、範答 |
 | \`05_口試題題庫.md\` | 全部口試題 + 通用面試題 + 各校側重 |
@@ -280,7 +318,7 @@ ${qc}
 > 以台灣研究所推甄（管理學院）的常見考題範圍來看，這些教材**遺漏了哪些高頻考點**？請依重要性排序。
 
 ### 7. 跨科重複與矛盾
-> 行銷管理與管理學兩科之間，有沒有**互相矛盾的敘述**，或同一概念在兩處定義不一致的情況？
+> ${SUBJECTS.map((s) => s.name).join('、')}各科之間，有沒有**互相矛盾的敘述**，或同一概念在兩處定義不一致的情況？
 `;
 }
 
@@ -355,15 +393,17 @@ const qcMd = Object.entries(qc)
 
 const written = [
   write('00_總覽與檢查指引.md', overview(qcMd)),
-  write('01_行銷管理_教材.md', lecture(SUBJECTS[0])),
-  write('02_管理學_教材.md', lecture(SUBJECTS[1])),
+  ...lectureFiles.map(({ subject, file }) => write(file, lecture(subject))),
   write('03_選擇題題庫.md', mcqBank()),
   write('04_申論題題庫.md', essayBank()),
   write('05_口試題題庫.md', oralBank())
 ];
 
+const stale = pruneStale();
+
 console.log('已產出 export/：');
 written.forEach((w) => console.log('  ' + w));
+if (stale.length) console.log('\n已清掉舊檔：', stale.join('、'));
 console.log('\n統計：', {
   知識點: concepts.length, 名詞卡: cards.length, 選擇題: mcqs.length,
   申論: essays.length, 口試: orals.length + GENERAL_ORAL.length
