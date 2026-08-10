@@ -10,7 +10,7 @@
  * ★ 新增 js/ 或 content/ 檔案時要同步加進 ASSETS。
  */
 
-const CACHE = 'gradprep-v8';
+const CACHE = 'gradprep-v9';
 
 const ASSETS = [
   './',
@@ -31,6 +31,7 @@ const ASSETS = [
   './content/index.js',
   './content/marketing.js',
   './content/management.js',
+  './content/economics.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/maskable-512.png'

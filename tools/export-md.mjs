@@ -317,6 +317,16 @@ function runQc() {
     }
   }
 
+  // 行內公式 `x` 必須成對。經濟／統計／財管大量使用，而欄位本身是樣板字串，
+  // 少寫一個 escape 反引號就會變成語法錯誤或整段公式外洩，這裡先擋一次。
+  const oddBackticks = [];
+  for (const c of concepts) {
+    for (const f of ['brief', 'advanced', 'example']) {
+      const v = c[f];
+      if (typeof v === 'string' && (v.match(/`/g) || []).length % 2 !== 0) oddBackticks.push(`${c.id}.${f}`);
+    }
+  }
+
   const missingEn = cards.filter((t) => !t.en).map((t) => t.id);
   const missingSource = concepts.filter((c) => !c.source).map((c) => c.id);
   const shortSample = essays.filter((e) => (e.sample || '').length < 500).map((e) => e.id);
@@ -328,6 +338,7 @@ function runQc() {
     重複的知識點id: dupIds,
     重複的題目id: dupItemIds,
     表格語法壞掉: [...new Set(brokenTables)],
+    行內公式反引號未成對: oddBackticks,
     指向不存在知識點的連結: deadLinks,
     名詞卡缺英文: missingEn,
     知識點缺出處: missingSource,

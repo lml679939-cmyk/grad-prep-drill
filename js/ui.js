@@ -72,8 +72,13 @@ function xref(id) {
   return c ? `<button type="button" class="xref" data-xref="${id}">${esc(c.title)}</button>` : `[[${id}]]`;
 }
 
+/* `公式` → 等寬字體的行內公式。
+   經濟／統計／財管會大量出現算式（彈性、GDP、複利），寫成一般內文會跟中文混在
+   一起看不出這是一條式子。刻意不引入 KaTeX——那會破壞零依賴與離線，而這三科的
+   算式用等寬字體加淡底就足夠辨識。要排上下標或分數時，用文字寫（如 Q^d、ΔQ/Q）。 */
 function inline(s) {
   return esc(s)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\[\[([a-z]+-\d+-\d+)\]\]/g, (m, id) => xref(id));
 }

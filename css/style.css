@@ -295,6 +295,17 @@ button { font: inherit; color: inherit; cursor: pointer; }
 }
 .xref:hover { text-decoration-style: solid; }
 
+/* `公式`。等寬字體讓算式從中文內文裡跳出來。
+   選擇器不限定容器——md() 用在教材內文、閃卡、選擇題詳解、申論範答與口試框架，
+   公式在哪一種都要長一樣。字級用 .92em 而非固定 px，才會跟著可調字級一起縮放；
+   overflow-wrap 是為了長算式在窄螢幕能斷行，不把版面撐寬。 */
+code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, "Noto Sans Mono", monospace;
+  font-size: .92em; padding: 1px 5px; border-radius: 4px;
+  background: var(--accent-bg); color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
 /* 教材表格。窄螢幕靠 .tablewrap 橫向捲動，
    不讓寬表格把整頁撐開（版面一旦水平溢出，全站都會跟著跑掉）。 */
 .tablewrap {
