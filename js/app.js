@@ -746,6 +746,12 @@ $('#modal').addEventListener('click', (e) => {
   if (e.target.id === 'modal') closeModal();
 });
 
+// 教材內文的 [[知識點]] 跨章連結：用事件委派，內文重繪也不必重新綁定
+document.addEventListener('click', (e) => {
+  const link = e.target.closest('[data-xref]');
+  if (link) openConcept(link.dataset.xref);
+});
+
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
   if (isModalOpen()) closeModal();

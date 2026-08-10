@@ -285,6 +285,16 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .layer summary { list-style: none; }
 .layer summary::-webkit-details-marker { display: none; }
 
+/* [[知識點]] 跨章連結。用 button 而非 a 是因為它不導航、只換內容，
+   而且 button 天生可用鍵盤聚焦與觸發。字級用 inherit 才不會在大字級下變小。 */
+.xref {
+  display: inline; padding: 0; border: none; background: none;
+  font: inherit; color: var(--accent); font-weight: 700;
+  text-decoration: underline; text-decoration-style: dotted;
+  text-underline-offset: 3px; cursor: pointer;
+}
+.xref:hover { text-decoration-style: solid; }
+
 /* 教材表格。窄螢幕靠 .tablewrap 橫向捲動，
    不讓寬表格把整頁撐開（版面一旦水平溢出，全站都會跟著跑掉）。 */
 .tablewrap {

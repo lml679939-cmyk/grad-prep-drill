@@ -5,6 +5,10 @@
 __pycache__/
 *.pyc
 
+# 匯出的教材／題庫 Markdown（node tools/export-md.mjs 隨時可重新產生，
+# 內容與 content/ 完全重複，不進版控）
+export/
+
 # 作業系統
 .DS_Store
 Thumbs.db

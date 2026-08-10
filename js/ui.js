@@ -1,9 +1,12 @@
 /* ui.js — DOM 工具、輕量 Markdown、Sheet／Modal／Toast
  *
- * 教材內文用一套刻意做小的 Markdown：只支援 **粗體**、清單、段落。
- * 不用完整 Markdown 函式庫是因為那會變成一個外部依賴，而教材裡用得到的
- * 語法就這三種。渲染前一律先跳脫 HTML，內容檔即使打錯也不會弄壞版面。
+ * 教材內文用一套刻意做小的 Markdown：只支援 **粗體**、清單、段落、表格、
+ * 以及 [[知識點 id]] 跨章連結。不用完整 Markdown 函式庫是因為那會變成一個
+ * 外部依賴，而教材裡用得到的語法就這幾種。渲染前一律先跳脫 HTML，
+ * 內容檔即使打錯也不會弄壞版面。
  */
+
+import { conceptById } from './content.js';
 
 export const $ = (sel, root = document) => root.querySelector(sel);
 export const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -60,8 +63,19 @@ export function esc(s) {
     .replace(/"/g, '&quot;');
 }
 
+/* [[mgt-08-02]] → 可點擊的知識點標題。
+   教材裡大量使用跨章連結（申論拉分最有效的手法），但一開始只訂了寫法沒做渲染，
+   使用者看到的是原文 [[mgt-08-02]]。跟表格那次是同一類錯誤：語法先訂、渲染沒跟上。
+   找不到對應知識點時保留原文，這樣內容打錯 id 會在畫面上直接看得出來。 */
+function xref(id) {
+  const c = conceptById.get(id);
+  return c ? `<button type="button" class="xref" data-xref="${id}">${esc(c.title)}</button>` : `[[${id}]]`;
+}
+
 function inline(s) {
-  return esc(s).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  return esc(s)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[\[([a-z]+-\d+-\d+)\]\]/g, (m, id) => xref(id));
 }
 
 /* 表格辨識：標題列 → 分隔列 → 內容列。
