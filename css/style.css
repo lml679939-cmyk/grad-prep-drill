@@ -655,6 +655,9 @@ textarea { resize: vertical; min-height: 130px; line-height: 1.7; }
   font-family: var(--font-num); font-size: .72rem; font-weight: 700;
   margin-top: 1px;
 }
+/* 文字必須包在這一層裡。.step 是 flex 容器，直接放 <strong>標題</strong>：說明
+   會產生兩個 flex item 而把標題擠成窄欄；min-width:0 讓長句在窄螢幕正常斷行。 */
+.step__t { flex: 1; min-width: 0; }
 
 .storycard {
   border: 1px solid var(--line-soft); border-radius: var(--radius-sm);

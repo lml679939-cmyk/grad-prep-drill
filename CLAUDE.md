@@ -285,22 +285,44 @@ SRS 間隔成長與 21 天封頂、目標日逼近時上限跟著縮、ease 上�
 - 答題後整塊 sheet body 會重繪，**舊的 DOM 參考會脫離**——要重新 query 才拿得到新狀態
 - 用 `await import('./js/srs.js')` 可在頁面內取得模組實例，直接驗證演算法，比點 UI 快很多
 
-### ★ `<span>` 預設 inline 造成的版面錯位（已咬過三次）
+### ★ inline／flex 造成的版面錯位（已咬過四次，同一個家族）
 
-`ui.js` 的 `el()` 產生什麼標籤就是什麼標籤，**不會自動補 `display`**。而 app.js 大量用 `<span>` 當結構容器，`<span>` 預設是 inline，會造成兩類症狀：
+`ui.js` 的 `el()` 產生什麼標籤就是什麼標籤，**不會自動補 `display`**。而 app.js 大量用 `<span>` 當結構容器，`<span>` 預設是 inline，會造成三類症狀：
 
 1. **該分行卻擠在同一行** —— 容器是 `<span>` 且未設 `display`，裡面兩個子 `<span>`（標題／說明）就會並排。已修：`.task__main`、`.row__main`。**日後新增這種「標題＋副標」結構時，容器一定要加 `display:flex; flex-direction:column`。**
 2. **`margin:auto` 置中失效** —— `margin:auto` 的置中效果**只對 block 級盒子生效，inline 級（含 `inline-flex`）一律算 0**。`.btn` 預設 `inline-flex`，導致 `.sheet__foot > *` 的置中對它無效、按鈕貼左。已修：`.btn--block` 改為 `display:flex`。
+3. **★ 把 `md()` 的結果直接塞進 flex 容器 → 內容被拆成多欄**（2026-08-11 修）。
+   **這是最隱蔽的一個**，症狀是「粗體標題被壓成窄欄並從中間斷字，說明文字另起一欄」。
+   **成因**：flex 容器的子節點會各自成為 flex item 並被 **blockify**。
+   `md('**標題**：說明')` 產生 `<strong>標題</strong>：說明`，
+   於是 `<strong>`（被 blockify，`display` 變 `block`）與後面的文字節點**各占一欄**。
+   已修：`.step`（面試模擬的答題框架）——內容改包一層 `.step__t { flex: 1; min-width: 0; }`。
+   **規則：任何 `display:flex` 的容器都不可以直接接收 `md()` 的輸出，一定要用一個 `<div>`／`<span>` 包成單一 flex item。**
+   `.opt`（選擇題選項）與 `.checkline`（申論要點）本來就有包 `<span>`，所以沒事——**新增類似元件時照這個作法**。
 
 改版面後的快速自檢（在 console 跑）：
 
 ```js
-// 找出「應該分行卻擠在一起」的容器
+// 1) 找出「應該分行卻擠在一起」的容器
 document.querySelectorAll('[class*="__main"]').forEach(m => {
   if (getComputedStyle(m).display.includes('inline'))
     console.warn('容器仍是 inline：', m.className);
 });
+
+// 2) 找出「flex 容器直接裝了 md() 輸出」的情形
+//    條件要同時成立：裸文字節點 ＋ md() 才會產生的行內元素（strong/em/code）。
+//    ★ 不要只判斷「有裸文字節點」——.card__head、.btn、.chip 這類
+//      「圖示＋文字標籤」是正常結構，會被誤報成幾十筆而讓人直接忽略這個檢查。
+document.querySelectorAll('*').forEach(e => {
+  if (!getComputedStyle(e).display.startsWith('flex')) return;
+  const kids = [...e.childNodes];
+  const bare = kids.some(n => n.nodeType === 3 && n.textContent.trim());
+  const md   = kids.some(n => n.nodeType === 1 && /^(STRONG|EM|CODE)$/.test(n.tagName));
+  if (bare && md) console.warn('flex 容器直接裝了 md() 輸出，會被拆成多欄：', e.className || e.tagName);
+});
 ```
+
+**第 2 項已驗證可用**：把修正前的 `.step` 寫法放回 DOM 會被抓到，移除後全站掃描為零誤報。
 
 ---
 

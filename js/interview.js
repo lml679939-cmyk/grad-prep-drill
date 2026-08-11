@@ -171,7 +171,13 @@ function renderReview(s, head) {
     body.append(
       el('div', { class: 'card' },
         el('div', { class: 'card__head' }, icon('list'), '答題框架'),
-        el('div', { class: 'steps' }, o.framework.map((f) => el('div', { class: 'step', html: md(f).replace(/^<p>|<\/p>$/g, '') })))
+        /* ★ 內容必須包一層 .step__t：.step 是 flex 容器，若把 md() 的結果直接塞進去，
+           「**粗體標題**：說明」會被拆成 <strong> 與文字兩個 flex item 各占一欄，
+           標題被擠成窄欄並從中間斷字。包一層之後整段成為單一 flex item。
+           （與 .task__main／.row__main 是同一類錯誤，見 CLAUDE.md 的開發陷阱） */
+        el('div', { class: 'steps' }, o.framework.map((f) =>
+          el('div', { class: 'step' },
+            el('div', { class: 'step__t', html: md(f).replace(/^<p>|<\/p>$/g, '') }))))
       )
     );
   }
