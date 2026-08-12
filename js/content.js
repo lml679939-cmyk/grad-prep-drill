@@ -117,7 +117,10 @@ export function itemsInScope(pool, scope = DEFAULT_SCOPE, ctx = {}) {
   const ids = new Set(conceptsInScope(scope, ctx).map((c) => c.id));
   const wrongSet = ctx.wrong ? new Set(Object.keys(ctx.wrong)) : new Set();
   return pool.filter((it) => {
-    if (scope.only === 'wrong') return wrongSet.has(it.id);
+    // 錯題也要吃科目／章節篩選。原本只看 wrongSet，於是在「練」分頁把科目切成
+    // 行銷再選「只練錯題」，出來的仍是全部五科的錯題（且模式卡上的題數也是全站的）。
+    // ids 已經是該科／該章的知識點，通用口試題沒有 conceptId 自然被排除。
+    if (scope.only === 'wrong') return wrongSet.has(it.id) && ids.has(it.conceptId);
     if (!it.conceptId) return scope.subject === 'all' && scope.only === 'all';  // 通用口試題
     return ids.has(it.conceptId);
   });

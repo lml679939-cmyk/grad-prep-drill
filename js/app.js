@@ -18,6 +18,7 @@ import * as flash from './flash.js';
 import * as quiz from './quiz.js';
 import * as essay from './essay.js';
 import * as interview from './interview.js';
+import * as wrongbook from './wrongbook.js';
 
 import {
   $, $$, el, icon, btn, md, clear, append, toast, empty, sectionTitle,
@@ -545,11 +546,13 @@ function renderMe() {
         () => interview.openStoryManager(refresh)),
       row('star', '各校側重', `${schools.length} 間行銷／企管所的調性，面試前掃一次`,
         () => interview.openSchoolNotes()),
-      row('warn', '錯題本', `${snap.wrongCount} 題・連續答對 2 次才移出`,
-        () => {
-          if (!snap.wrongCount) return toast('錯題本是空的');
-          quiz.start({ ...scope, only: 'wrong' }, ctx(), refresh);
-        }),
+      // 這裡刻意不直接開始重練。看得到「哪個知識點反覆錯」才是錯題資料的價值，
+      // 直接丟題目出來等於把最強的診斷訊號藏起來。重練的按鈕在那一頁的最下方。
+      row('warn', '錯題本',
+        snap.wrongCount
+          ? `${snap.wrongCount} 題・看哪些知識點反覆錯`
+          : '目前是空的・答錯的選擇題會收進來',
+        () => wrongbook.open(ctx(), refresh)),
       row('textsize', '字體大小', `目前 ${state.settings.textSize}px・也可按右上角的 Aa`, openTextSize),
       row('gear', '設定', `目標日 ${formatDay(state.settings.targetDate)}`, openSettings)
     )

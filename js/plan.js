@@ -12,8 +12,9 @@
  */
 
 import { state, today, daysBetween, dayRecord } from './storage.js';
-import { allCards, allMcqs, allConcepts, allEssays, allOrals } from './content.js';
+import { allCards, allMcqs, allConcepts, allEssays, allOrals, conceptById } from './content.js';
 import { countDue, countNew, countHeld, isSprint, daysToTarget, newQuota } from './srs.js';
+import { wrongIds } from './quiz.js';
 
 const SPRINT_CARD_GOAL = 40;
 const SPRINT_MCQ_GOAL = 30;
@@ -49,8 +50,12 @@ export function snapshot() {
     : Math.min(state.settings.mcqPerSession, mcqsDue + newQuota(mcqsNew));
 
   const done = dayRecord();
-  const readCount = Object.keys(state.read).length;
-  const wrongCount = Object.keys(state.wrong).length;
+
+  // 兩個數字都要濾掉「教材已經沒有這個 id」的殘留紀錄，否則會灌水：
+  // 錯題徽章顯示 2 題但實際只練得到 1 題、已讀數甚至可能大於知識點總數。
+  // 錯題的過濾邏輯在 quiz.wrongIds()，錯題本瀏覽頁也用同一個，數字才會一致。
+  const readCount = Object.keys(state.read).filter((id) => conceptById.has(id)).length;
+  const wrongCount = wrongIds().length;
 
   // 整體進度：已經碰過的練習項目 ÷ 全部練習項目
   const totalItems = ck.length + mk.length;

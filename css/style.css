@@ -711,6 +711,27 @@ textarea { resize: vertical; min-height: 130px; line-height: 1.7; }
 .row__r { font-size: .8rem; color: var(--ink-3); font-family: var(--font-num); }
 .row--danger .row__t, .row--danger .ic { color: var(--bad); }
 
+/* ══════════ 錯題本瀏覽 ══════════ */
+
+.wblist { display: flex; flex-direction: column; gap: 10px; }
+
+/* 知識點標題列（.row）下面掛該知識點所有錯過的題目 */
+.wqs { border-top: 1px solid var(--line-soft); }
+.wq { padding: 10px var(--pad) 11px; border-bottom: 1px solid var(--line-soft); }
+.wq:last-child { border-bottom: none; }
+
+/* ★ md() 的輸出一定要有自己的容器。.wq 與 .wq__stem 都是 block，
+   不像 .step 那樣是 flex，所以 <strong> 不會被 blockify 成獨立欄位
+   （見 CLAUDE.md「inline／flex 造成的版面錯位」）。 */
+.wq__stem { font-size: .82rem; line-height: 1.6; color: var(--ink-2); }
+
+.wq__meta {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 3px 10px;
+  margin-top: 6px; font-size: .72rem; color: var(--ink-3);
+}
+.wq__n { font-family: var(--font-num); font-weight: 700; color: var(--bad); }
+.wq__near { color: var(--ok); font-weight: 600; }
+
 /* ══════════ 空狀態 ══════════ */
 
 .empty {
